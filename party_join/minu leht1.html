@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>SpectX openapi query</title>
+    <link rel="stylesheet" type="text/css" href="theme.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#result').text('Otsin viimase kuu jooksul liitunuid');
+            $.ajax({
+                type: 'POST',
+                url: 'api.php',
+                data: $('#search').serialize(),
+                success: function (resp) {
+                    var liitumised = JSON.parse(resp);
+                    var pealkirjad = [];
+                    for(var pealkiri in liitumised[0]) pealkirjad.push(pealkiri);
+
+                    var table = $('<table></table>');
+                    var header = $('<tr></tr>').attr({ }).appendTo(table);
+
+                    for (var i = 0; i < pealkirjad.length; ++i) {
+                        $('<td></td>').text(pealkirjad[i]).appendTo(header);
+                    }
+                    for (var i = 0; i < liitumised.length; ++i) {
+                        var row = $('<tr></tr>').attr({ }).appendTo(table);
+                        for (var i2 = 0; i2 < pealkirjad.length; ++i2){
+                            $('<td></td>').text(liitumised[i][pealkirjad[i2]]).appendTo(row);
+                        }
+                    }
+
+                    $('#result').empty();
+                    table.appendTo($('#result'));
+                },
+                error: function (resp) {
+                    $('#result').text('Viga: ' + resp.statusText);
+                    console.log('error', resp.statusText);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="result"></div>
+</body>
+
+</html>
